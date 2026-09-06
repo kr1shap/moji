@@ -134,6 +134,7 @@ final class AppCoordinator {
         NSApplication.shared.terminate(nil)
     }
 
+    // MARK: For previews
     static func preview(
         runtimeState: RuntimeState = .disabled,
         inputAccess: InputAccessStatus = InputAccessStatus(canListen: false, canPost: false),

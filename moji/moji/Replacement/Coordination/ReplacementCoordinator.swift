@@ -23,6 +23,7 @@ final class ReplacementCoordinator: @unchecked Sendable {
         Task { [weak self] in
             guard let self else { return }
             do {
+                // Use the clipboard to copy and paste. Because of this, we need to maintain previous clipboard history
                 let temporaryWrite = try pasteboardManager.writeTemporarily(request.emoji)
                 try eventPoster.postBackspaces(count: request.deletionCount)
                 try eventPoster.postPaste()
