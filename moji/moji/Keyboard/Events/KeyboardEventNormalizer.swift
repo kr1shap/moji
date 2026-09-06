@@ -6,7 +6,7 @@ struct KeyboardEventNormalizer {
         let flags = event.flags
         let hasUnsupportedModifiers = flags.contains(.maskCommand) || flags.contains(.maskControl) || flags.contains(.maskAlternate)
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        let input = specialInput(for: keyCode) ?? characterInput(from: event) ?? .navigation
+        let input = specialInput(for: keyCode) ?? characterInput(from: event) ?? .unrecognized
 
         return NormalizedKeyboardEvent(
             input: input,

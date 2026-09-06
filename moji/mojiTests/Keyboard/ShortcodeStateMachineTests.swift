@@ -73,7 +73,7 @@ struct ShortcodeStateMachineTests {
     }
 
     @Test func resetKeysTimeoutAndDisabledStatePassThrough() {
-        let resetInputs: [KeyboardInput] = [.escape, .returnKey, .tab, .navigation, .unsupportedModifiers, .timeout]
+        let resetInputs: [KeyboardInput] = [.escape, .returnKey, .tab, .navigation, .unrecognized, .unsupportedModifiers, .timeout]
 
         for input in resetInputs {
             var machine = ShortcodeStateMachine()

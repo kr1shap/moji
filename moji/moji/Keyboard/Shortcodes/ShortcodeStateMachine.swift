@@ -17,7 +17,7 @@ struct ShortcodeStateMachine {
             process(character: character, runtimeIndex: runtimeIndex)
         case .backspace:
             processBackspace()
-        case .escape, .returnKey, .tab, .navigation, .unsupportedModifiers, .timeout:
+        case .escape, .returnKey, .tab, .navigation, .unrecognized, .unsupportedModifiers, .timeout:
             resetIfCapturing()
         }
     }
@@ -47,7 +47,7 @@ struct ShortcodeStateMachine {
             guard let emoji = runtimeIndex[alias] else {
                 return .resetAndPassThrough
             }
-            return .replace(emoji: emoji, deletionCount: alias.unicodeScalars.count + 1)
+            return .replace(emoji: emoji, deletionCount: alias.unicodeScalars.count + 1) // don't count closing colon as you intercept 
         }
 
         let normalizedCharacter = String(character).lowercased()

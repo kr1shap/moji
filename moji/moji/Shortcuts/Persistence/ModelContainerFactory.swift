@@ -9,6 +9,7 @@ enum ModelContainerFactory {
         }
     }
 
+    // MARK: For previews
     static func makeInMemory() throws -> ModelContainer {
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         return try ModelContainer(for: EmojiShortcut.self, configurations: configuration)

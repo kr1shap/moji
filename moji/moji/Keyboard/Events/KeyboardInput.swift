@@ -5,6 +5,7 @@ enum KeyboardInput: Equatable {
     case returnKey
     case tab
     case navigation
+    case unrecognized
     case unsupportedModifiers
     case timeout
 }
