@@ -23,12 +23,11 @@ final class mojiUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
+    func testLaunchesWithoutPrimaryWindow() throws {
         let app = XCUIApplication()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        XCTAssertEqual(app.windows.count, 0)
     }
 
     @MainActor
