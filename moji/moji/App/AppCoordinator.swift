@@ -94,16 +94,52 @@ final class AppCoordinator {
         accessChecker.requestPostingAccess()
     }
 
+    func setEnabled(_ isEnabled: Bool) {
+        preferences.isEnabled = isEnabled
+        refreshInputAccess()
+    }
+
+    @discardableResult
+    func createShortcut(alias: String, emoji: String) throws -> EmojiShortcut {
+        let shortcut = try repository.create(alias: alias, emoji: emoji)
+        publishRuntimeIndex()
+        return shortcut
+    }
+
+    func updateShortcut(_ shortcut: EmojiShortcut, alias: String, emoji: String) throws {
+        try repository.update(shortcut, alias: alias, emoji: emoji)
+        publishRuntimeIndex()
+    }
+
+    func deleteShortcut(_ shortcut: EmojiShortcut) throws {
+        try repository.delete(shortcut)
+        publishRuntimeIndex()
+    }
+
+    func setShortcutEnabled(_ isEnabled: Bool, for shortcut: EmojiShortcut) throws {
+        try repository.setEnabled(isEnabled, for: shortcut)
+        publishRuntimeIndex()
+    }
+
     private func handleReplacementFailure() {
         eventTap.stop()
         runtimeState = .error("Moji could not replace the shortcut.")
+    }
+
+    private func publishRuntimeIndex() {
+        eventTap.updateRuntimeIndex(repository.runtimeIndex)
     }
 
     func terminate() {
         NSApplication.shared.terminate(nil)
     }
 
-    static func preview(shortcuts: [(alias: String, emoji: String, isEnabled: Bool)] = []) -> AppCoordinator {
+    static func preview(
+        runtimeState: RuntimeState = .disabled,
+        inputAccess: InputAccessStatus = InputAccessStatus(canListen: false, canPost: false),
+        isEnabled: Bool = false,
+        shortcuts: [(alias: String, emoji: String, isEnabled: Bool)] = []
+    ) -> AppCoordinator {
         let container: ModelContainer
         do {
             container = try ModelContainerFactory.makeInMemory()
@@ -112,8 +148,10 @@ final class AppCoordinator {
         }
 
         let coordinator = AppCoordinator(
+            runtimeState: runtimeState,
             modelContainer: container,
-            preferences: PreferencesStore()
+            preferences: .preview(isEnabled: isEnabled),
+            accessChecker: PreviewInputAccessChecker(status: inputAccess)
         )
         for shortcut in shortcuts {
             if let createdShortcut = try? coordinator.repository.create(alias: shortcut.alias, emoji: shortcut.emoji), shortcut.isEnabled == false {

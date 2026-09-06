@@ -20,6 +20,18 @@ struct MenuBarView: View {
                 requestPostingAccess: coordinator.requestPostingAccess
             )
             Button(
+                coordinator.preferences.isEnabled ? "Disable Moji" : "Enable Moji",
+                systemImage: coordinator.preferences.isEnabled ? "pause.circle" : "play.circle"
+            ) {
+                coordinator.setEnabled(!coordinator.preferences.isEnabled)
+            }
+            .accessibilityIdentifier("enabledButton")
+            .accessibilityValue(coordinator.preferences.isEnabled ? "Enabled" : "Disabled")
+            if coordinator.runtimeState == .permissionRequired || coordinator.runtimeState.isError {
+                Button("Retry", systemImage: "arrow.clockwise", action: coordinator.refreshInputAccess)
+                    .accessibilityIdentifier("retryButton")
+            }
+            Button(
                 "Manage Shortcuts",
                 systemImage: "list.bullet",
                 action: openShortcutManagement
@@ -52,15 +64,19 @@ struct MenuBarView: View {
 
 #Preview("Permission Required") {
     MenuBarView()
-        .environment(AppCoordinator(runtimeState: .permissionRequired))
+        .environment(AppCoordinator.preview(runtimeState: .permissionRequired, isEnabled: true))
 }
 
 #Preview("Active") {
     MenuBarView()
-        .environment(AppCoordinator(runtimeState: .active))
+        .environment(AppCoordinator.preview(
+            runtimeState: .active,
+            inputAccess: InputAccessStatus(canListen: true, canPost: true),
+            isEnabled: true
+        ))
 }
 
 #Preview("Error") {
     MenuBarView()
-        .environment(AppCoordinator(runtimeState: .error("Moji could not start.")))
+        .environment(AppCoordinator.preview(runtimeState: .error("Moji could not start.")))
 }

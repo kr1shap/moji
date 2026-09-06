@@ -84,9 +84,9 @@ struct ShortcutManagementView: View {
     private func saveShortcut(alias: String, emoji: String) throws {
         switch editorMode {
         case .add:
-            _ = try coordinator.repository.create(alias: alias, emoji: emoji)
+            _ = try coordinator.createShortcut(alias: alias, emoji: emoji)
         case let .edit(shortcut):
-            try coordinator.repository.update(shortcut, alias: alias, emoji: emoji)
+            try coordinator.updateShortcut(shortcut, alias: alias, emoji: emoji)
         case nil:
             return
         }
@@ -94,7 +94,7 @@ struct ShortcutManagementView: View {
 
     private func updateEnabledState(for shortcut: EmojiShortcut) {
         do {
-            try coordinator.repository.setEnabled(!shortcut.isEnabled, for: shortcut)
+            try coordinator.setShortcutEnabled(!shortcut.isEnabled, for: shortcut)
         } catch {
             present(error)
         }
@@ -108,7 +108,7 @@ struct ShortcutManagementView: View {
     private func deleteShortcut() {
         guard let shortcutPendingDeletion else { return }
         do {
-            try coordinator.repository.delete(shortcutPendingDeletion)
+            try coordinator.deleteShortcut(shortcutPendingDeletion)
         } catch {
             present(error)
         }

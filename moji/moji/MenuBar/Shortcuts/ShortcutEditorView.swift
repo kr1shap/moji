@@ -6,8 +6,8 @@ struct ShortcutEditorView: View {
 
     @Environment(\.dismiss) private var dismiss
     @FocusState private var focusedField: ShortcutEditorField?
-    @State private var alias: String
-    @State private var emoji: String
+    @State private var alias: String = "skull"
+    @State private var emoji: String = ""
     @State private var validationMessage: String?
 
     init(
@@ -31,9 +31,11 @@ struct ShortcutEditorView: View {
                 TextField("Shortcut name", text: $alias, prompt: Text("skull"))
                     .focused($focusedField, equals: .alias)
                     .accessibilityHint("Use letters, numbers, underscores, hyphens, or plus signs. Colons are added automatically.")
+                    .accessibilityIdentifier("shortcutAliasField")
 
-                TextField("Emoji", text: $emoji, prompt: Text("💀"))
+                TextField("Emoji", text: $emoji, prompt: Text(""))
                     .focused($focusedField, equals: .emoji)
+                    .accessibilityIdentifier("shortcutEmojiField")
 
                 if let validationMessage {
                     Label(validationMessage, systemImage: "exclamationmark.triangle")
@@ -49,12 +51,14 @@ struct ShortcutEditorView: View {
                     dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
+                .accessibilityIdentifier("cancelShortcutButton")
 
                 Spacer()
 
                 Button("Save", systemImage: "checkmark", action: save)
                     .keyboardShortcut(.defaultAction)
                     .accessibilityHint("Saves this shortcut")
+                    .accessibilityIdentifier("saveShortcutButton")
             }
         }
         .padding()
