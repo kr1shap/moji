@@ -134,7 +134,7 @@ final class AppCoordinator {
         NSApplication.shared.terminate(nil)
     }
 
-    // MARK: For previews
+    // Preview-only factory for constructing an isolated coordinator state.
     static func preview(
         runtimeState: RuntimeState = .disabled,
         inputAccess: InputAccessStatus = InputAccessStatus(canListen: false, canPost: false),

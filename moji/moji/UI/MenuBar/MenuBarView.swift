@@ -57,6 +57,7 @@ struct MenuBarView: View {
     }
 }
 
+// Preview-only examples for menu-bar states.
 #Preview("Disabled") {
     MenuBarView()
         .environment(AppCoordinator.preview())

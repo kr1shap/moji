@@ -26,7 +26,7 @@ final class PreferencesStore {
         self.isEnabled = isEnabled
     }
 
-    // MARK: For previews
+    // Preview-only helper for constructing in-memory preference state.
     static func preview(isEnabled: Bool = false) -> PreferencesStore {
         PreferencesStore(isEnabled: isEnabled)
     }

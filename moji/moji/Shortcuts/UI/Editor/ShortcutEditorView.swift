@@ -86,6 +86,7 @@ struct ShortcutEditorView: View {
     }
 }
 
+// Preview-only examples for editor modes and validation states.
 #Preview("Add") {
     ShortcutEditorView(mode: .add) { _, _ in }
 }

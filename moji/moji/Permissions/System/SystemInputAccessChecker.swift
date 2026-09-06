@@ -17,7 +17,7 @@ struct SystemInputAccessChecker: InputAccessChecking {
     }
 }
 
-// MARK: Mock input access checker for preview
+// Preview-only input access checker; never used for real permission queries.
 struct PreviewInputAccessChecker: InputAccessChecking {
     let previewStatus: InputAccessStatus
 

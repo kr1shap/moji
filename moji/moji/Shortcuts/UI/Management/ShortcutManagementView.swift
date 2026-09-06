@@ -121,6 +121,7 @@ struct ShortcutManagementView: View {
     }
 }
 
+// Preview-only examples for management-screen data states.
 #Preview("Empty") {
     ShortcutManagementView()
         .environment(AppCoordinator.preview())

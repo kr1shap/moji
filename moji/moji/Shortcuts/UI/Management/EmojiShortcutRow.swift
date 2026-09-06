@@ -39,6 +39,7 @@ struct EmojiShortcutRow: View {
     }
 }
 
+// Preview-only examples for shortcut-row states.
 #Preview("Enabled") {
     EmojiShortcutRow(
         shortcut: EmojiShortcut(alias: "skull", emoji: "💀"),

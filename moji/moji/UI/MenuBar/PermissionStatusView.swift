@@ -27,6 +27,7 @@ struct PermissionStatusView: View {
     }
 }
 
+// Preview-only examples for permission states.
 #Preview("Required") {
     PermissionStatusView(
         status: InputAccessStatus(canListen: false, canPost: false),
