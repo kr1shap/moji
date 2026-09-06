@@ -3,6 +3,7 @@
 //  moji
 //
 import SwiftUI
+import Combine
 
 @main
 struct MojiApp: App {
@@ -13,6 +14,9 @@ struct MojiApp: App {
             MenuBarView()
                 .environment(coordinator)
                 .task { coordinator.start() }
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
+                    coordinator.refreshInputAccess()
+                }
         }
         .menuBarExtraStyle(.window)
 

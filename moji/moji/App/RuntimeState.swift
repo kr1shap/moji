@@ -26,4 +26,12 @@ enum RuntimeState: Equatable {
         case .error: "exclamationmark.triangle"
         }
     }
+
+    var isError: Bool {
+        if case .error = self {
+            true
+        } else {
+            false
+        }
+    }
 }

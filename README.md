@@ -1,5 +1,13 @@
 # Mac Emoji Shortcuts — Implementation Plan
 
+## Current app setup
+
+Moji is a macOS menu-bar utility. Open its smiling-face menu-bar icon, choose **Manage Shortcuts**, and explicitly save aliases such as `skull → 💀`. Aliases are stored without colons and accept up to 32 ASCII letters, digits, `_`, `-`, or `+` characters.
+
+To enable replacement, grant both Input Monitoring and Accessibility when Moji requests them, then select **Enable Moji**. Moji only observes a bounded shortcode candidate and never stores surrounding typed content. It uses a temporary pasteboard write plus synthesized Backspaces and Command-V for V1 replacement; the prior clipboard is restored after 150 ms only if nothing else changed it. Clipboard managers may briefly observe that temporary write.
+
+V1 does not include login-at-launch, autocomplete, suggestions, imports, favorites, built-in shortcut libraries, custom input methods, or direct Unicode insertion.
+
 ## Goal
 
 Build a native macOS menu-bar utility that runs continuously in the background and replaces Discord-style emoji shortcodes such as `:skull:` with their configured Unicode emoji while the normal ABC keyboard/input source remains active.
