@@ -67,7 +67,7 @@ final class EmojiShortcutRepository {
         guard !normalizedAlias.isEmpty else {
             throw EmojiShortcutValidationError.emptyAlias
         }
-        guard normalizedAlias.unicodeScalars.count <= 30 else {
+        guard normalizedAlias.unicodeScalars.count <= ShortcodeStateMachine.maximumAliasLength else {
             throw EmojiShortcutValidationError.aliasTooLong
         }
         guard normalizedAlias.unicodeScalars.allSatisfy(isAllowedAliasScalar) else {

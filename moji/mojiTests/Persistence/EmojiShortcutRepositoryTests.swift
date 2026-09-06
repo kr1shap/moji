@@ -31,9 +31,14 @@ struct EmojiShortcutRepositoryTests {
         }
     }
 
-    @Test func createRejectsAliasesLongerThanSixtyFourCharacters() throws {
+    @Test func createAcceptsThirtyTwoCharacterAliasesAndRejectsLongerAliases() throws {
         let repository = try makeRepository()
-        let longAlias = String(repeating: "a", count: 65)
+        let maximumLengthAlias = String(repeating: "a", count: 32)
+        let longAlias = String(repeating: "a", count: 33)
+
+        let shortcut = try repository.create(alias: maximumLengthAlias, emoji: "💀")
+
+        #expect(shortcut.alias == maximumLengthAlias)
 
         #expect(throws: EmojiShortcutValidationError.aliasTooLong) {
             try repository.create(alias: longAlias, emoji: "💀")
