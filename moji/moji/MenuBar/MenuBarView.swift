@@ -14,6 +14,11 @@ struct MenuBarView: View {
                 .font(.headline)
             StatusRow(state: coordinator.runtimeState)
             Divider()
+            PermissionStatusView(
+                status: coordinator.inputAccess,
+                requestListeningAccess: coordinator.requestListeningAccess,
+                requestPostingAccess: coordinator.requestPostingAccess
+            )
             Button(
                 "Manage Shortcuts",
                 systemImage: "list.bullet",
