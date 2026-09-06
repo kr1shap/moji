@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Xcode build products and per-user state
+DerivedData/
+build/
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+*.moved-aside
+*.xcuserdatad
+
+# Xcode breakpoints
+xcdebugger/Breakpoints_v2.xcbkptlist
