@@ -6,6 +6,7 @@ import SwiftUI
 
 struct MenuBarView: View {
     @Environment(AppCoordinator.self) private var coordinator
+    @Environment(\.openWindow) private var openWindow
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -13,7 +14,13 @@ struct MenuBarView: View {
                 .font(.headline)
             StatusRow(state: coordinator.runtimeState)
             Divider()
-            Text("Shortcut management arrives in the next milestone.")
+            Button(
+                "Manage Shortcuts",
+                systemImage: "list.bullet",
+                action: openShortcutManagement
+            )
+            .accessibilityIdentifier("manageShortcutsButton")
+            Text("\(coordinator.repository.shortcuts.count) configured")
                 .font(.callout)
                 .foregroundStyle(.secondary)
             HStack {
@@ -27,11 +34,15 @@ struct MenuBarView: View {
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Moji menu")
     }
+
+    private func openShortcutManagement() {
+        openWindow(id: AppWindow.shortcutManagementID)
+    }
 }
 
 #Preview("Disabled") {
     MenuBarView()
-        .environment(AppCoordinator())
+        .environment(AppCoordinator.preview())
 }
 
 #Preview("Permission Required") {
