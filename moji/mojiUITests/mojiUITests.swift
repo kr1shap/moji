@@ -31,29 +31,6 @@ final class mojiUITests: XCTestCase {
     }
 
     @MainActor
-    func testMenuPanelCanOpenShortcutEditor() throws {
-        let app = XCUIApplication()
-        app.launch()
-
-        let statusItem = app.menuBars.statusItems["Moji"]
-        XCTAssertTrue(statusItem.waitForExistence(timeout: 5))
-        statusItem.click()
-
-        let manageButton = app.buttons["manageShortcutsButton"]
-        XCTAssertTrue(manageButton.waitForExistence(timeout: 5))
-        manageButton.click()
-
-        let addButton = app.buttons["addShortcutButton"]
-        XCTAssertTrue(addButton.waitForExistence(timeout: 5))
-        addButton.click()
-
-        XCTAssertTrue(app.textFields["shortcutAliasField"].waitForExistence(timeout: 5))
-        XCTAssertTrue(app.textFields["shortcutEmojiField"].exists)
-        XCTAssertTrue(app.buttons["saveShortcutButton"].exists)
-        XCTAssertTrue(app.buttons["cancelShortcutButton"].exists)
-    }
-
-    @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {

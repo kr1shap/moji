@@ -11,7 +11,7 @@ struct StatusRow: View {
         HStack(spacing: 10) {
             Rectangle()
                 .fill(statusColor)
-                .frame(width: 17, height: 17)
+                .frame(width: 15, height: 15)
                 .clipShape(.rect(cornerRadius: 3))
                 .rotationEffect(.radians(1.10))
                 .accessibilityHidden(true)

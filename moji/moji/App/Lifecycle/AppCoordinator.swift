@@ -86,12 +86,9 @@ final class AppCoordinator {
         runtimeState = .active
     }
 
-    func requestListeningAccess() {
-        accessChecker.requestListeningAccess()
-    }
-
-    func requestPostingAccess() {
-        accessChecker.requestPostingAccess()
+    func requestAccessibilityAccess() {
+        accessChecker.requestAccessibilityAccess()
+        refreshInputAccess()
     }
 
     func setEnabled(_ isEnabled: Bool) {
@@ -137,7 +134,7 @@ final class AppCoordinator {
     // Preview-only factory for constructing an isolated coordinator state.
     static func preview(
         runtimeState: RuntimeState = .disabled,
-        inputAccess: InputAccessStatus = InputAccessStatus(canListen: false, canPost: false),
+        inputAccess: InputAccessStatus = InputAccessStatus(isAccessibilityGranted: false),
         isEnabled: Bool = false,
         shortcuts: [(alias: String, emoji: String, isEnabled: Bool)] = []
     ) -> AppCoordinator {

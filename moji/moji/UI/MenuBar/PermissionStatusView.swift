@@ -2,41 +2,23 @@ import SwiftUI
 
 struct PermissionStatusView: View {
     let status: InputAccessStatus
-    let requestListeningAccess: () -> Void
-    let requestPostingAccess: () -> Void
+    let requestAccessibilityAccess: () -> Void
 
     var body: some View {
-        if !status.missingPermissions.isEmpty {
-            VStack(alignment: .leading, spacing: 4) {
+        if !status.isGranted {
+            VStack(alignment: .leading, spacing: 6) {
                 Text("we need some permissions…")
                     .font(.header)
 
-                HStack(spacing: 10) {
-                    ForEach(status.missingPermissions, id: \.self) { permission in
-                        PermissionStatusButton(
-                            permission: permission,
-                            requestAccess: { requestAccess(for: permission) }
-                        )
-                    }
-                }
+                PermissionStatusButton(requestAccess: requestAccessibilityAccess)
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Moji permissions")
         }
     }
-
-    private func requestAccess(for permission: InputPermission) {
-        switch permission {
-        case .inputMonitoring:
-            requestListeningAccess()
-        case .accessibility:
-            requestPostingAccess()
-        }
-    }
 }
 
 private struct PermissionStatusButton: View {
-    let permission: InputPermission
     let requestAccess: () -> Void
 
     var body: some View {
@@ -44,35 +26,33 @@ private struct PermissionStatusButton: View {
             HStack(spacing: 6) {
                 Rectangle()
                     .fill(.orange)
-                    .frame(width: 17, height: 17)
+                    .frame(width: 15, height: 15)
                     .clipShape(.rect(cornerRadius: 3))
                     .rotationEffect(.radians(1.10))
                     .accessibilityHidden(true)
-                Text(permission.title)
+                Text("accessibility")
                     .font(.label)
             }
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Allow \(permission.title)")
-        .accessibilityHint("Opens the system permission prompt")
+        .accessibilityLabel("Allow accessibility")
+        .accessibilityHint("Requests Accessibility access from macOS")
     }
 }
 
 // Preview-only examples for permission states.
 #Preview("Required") {
     PermissionStatusView(
-        status: InputAccessStatus(canListen: false, canPost: false),
-        requestListeningAccess: {},
-        requestPostingAccess: {}
+        status: InputAccessStatus(isAccessibilityGranted: false),
+        requestAccessibilityAccess: {}
     )
     .padding()
 }
 
 #Preview("Granted") {
     PermissionStatusView(
-        status: InputAccessStatus(canListen: true, canPost: true),
-        requestListeningAccess: {},
-        requestPostingAccess: {}
+        status: InputAccessStatus(isAccessibilityGranted: true),
+        requestAccessibilityAccess: {}
     )
     .padding()
 }

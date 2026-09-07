@@ -76,7 +76,7 @@ Moji also marks its own synthesized events to avoid processing them again, and r
 
 > **Entitlements note:** Moji does not use the App Sandbox. That entitlement was removed because the sandbox prevents the reliable global `CGEvent` tap and synthesized keyboard events required for shortcode detection and replacement. Hardened runtime and automatic code signing remain enabled, and macOS input-access permissions are still required.
 
-> **Project.pbxproj:** If you look at this file, you probably will see my name as the workspace (as well, I created the project locally). You can change this to yours if you want to play around, it should do no harm. 
+> **Project.pbxproj:** If you look at this file, you probably will see my name as the workspace (as well, I created the project locally). You can change this to yours if you want to play around, it should do no harm.
 
 ### Keyboard input data flow
 
@@ -88,7 +88,30 @@ Moji also marks its own synthesized events to avoid processing them again, and r
 
 1. Launch Moji and choose **Manage Shortcuts** from the menu-bar icon.
 2. Add an alias and an emoji—for example, `party` and `🎉`.
-3. Grant the requested macOS input-access permission, then enable Moji.
+3. Select the requested **Accessibility** permission in Moji and approve the native macOS prompt. If it was previously denied, enable Moji manually under **Privacy & Security** → **Accessibility**. When System Settings asks to quit and reopen Moji so the permission can take effect, choose **Quit & Reopen**.
 4. Type `:party:` in a text field to insert `🎉`.
+
+### Launching without opening Xcode
+
+On a Mac with Xcode or the Xcode Command Line Tools installed, double-click [`launch-moji.command`](launch-moji.command). Or, run `./launch-moji.command`.
+
+The script builds the Release app using Xcode’s normal signing, stops an older Moji instance, and launches the newly built app. Stable signing is necessary because macOS associates Accessibility grants with the app’s signing identity; ad-hoc signatures change whenever the executable changes and invalidate those grants.
+
+Select your own development team in the project’s **Signing & Capabilities** settings before using the launcher. You can also override the project setting for one invocation:
+
+```zsh
+MOJI_DEVELOPMENT_TEAM=YOUR_TEAM_ID ./launch-moji.command
+```
+
+A free Apple developer account is sufficient for local development. The launcher does not require the project owner’s account. On the first signed launch, select Moji’s permission buttons and approve the native macOS prompts.
+
+If this Mac previously granted access to an ad-hoc or differently signed Moji build, reset those stale entries once before granting access to the newly signed build:
+
+```zsh
+MOJI_BUNDLE_ID="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' .build/Build/Products/Release/moji.app/Contents/Info.plist)"
+tccutil reset Accessibility "$MOJI_BUNDLE_ID"
+```
+
+This is a local development launcher, not a notarized app distribution method.
 
 > **Why Moji?** It is a small utility for a tiny everyday annoyance. No new keyboard to learn—just your own shortcuts, available wherever you type.

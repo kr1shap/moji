@@ -10,15 +10,15 @@ struct MenuBarView: View {
 
             PermissionStatusView(
                 status: coordinator.inputAccess,
-                requestListeningAccess: coordinator.requestListeningAccess,
-                requestPostingAccess: coordinator.requestPostingAccess
+                requestAccessibilityAccess: coordinator.requestAccessibilityAccess
             )
-            .padding(.top, coordinator.inputAccess.missingPermissions.isEmpty ? 0 : 6)
+            .padding(.top, coordinator.inputAccess.isGranted ? 0 : 6)
 
             footer
         }
         .padding(15)
         .frame(width: 360, alignment: .leading)
+        .onAppear { coordinator.refreshInputAccess() }
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Moji menu")
     }
@@ -79,7 +79,7 @@ struct MenuBarView: View {
     MenuBarView()
         .environment(AppCoordinator.preview(
             runtimeState: .active,
-            inputAccess: InputAccessStatus(canListen: true, canPost: true),
+            inputAccess: InputAccessStatus(isAccessibilityGranted: true),
             isEnabled: true
         ))
 }

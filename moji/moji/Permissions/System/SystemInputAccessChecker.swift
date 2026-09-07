@@ -1,19 +1,15 @@
-import CoreGraphics
+@preconcurrency import ApplicationServices
 
 struct SystemInputAccessChecker: InputAccessChecking {
     func status() -> InputAccessStatus {
-        InputAccessStatus(
-            canListen: CGPreflightListenEventAccess(),
-            canPost: CGPreflightPostEventAccess()
-        )
+        InputAccessStatus(isAccessibilityGranted: AXIsProcessTrusted())
     }
 
-    func requestListeningAccess() {
-        CGRequestListenEventAccess()
-    }
-
-    func requestPostingAccess() {
-        CGRequestPostEventAccess()
+    func requestAccessibilityAccess() {
+        let options = [
+            kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true
+        ] as CFDictionary
+        _ = AXIsProcessTrustedWithOptions(options)
     }
 }
 
@@ -29,7 +25,5 @@ struct PreviewInputAccessChecker: InputAccessChecking {
         previewStatus
     }
 
-    func requestListeningAccess() {}
-
-    func requestPostingAccess() {}
+    func requestAccessibilityAccess() {}
 }
