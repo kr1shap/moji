@@ -25,21 +25,23 @@ struct ShortcutEditorView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(mode.title)
-                .font(.title2)
+                .font(.appTitle)
 
             Form {
                 TextField("Shortcut name", text: $alias, prompt: Text("skull"))
+                    .font(.inputText)
                     .focused($focusedField, equals: .alias)
                     .accessibilityHint("Use letters, numbers, underscores, hyphens, or plus signs. Colons are added automatically.")
                     .accessibilityIdentifier("shortcutAliasField")
 
                 TextField("Emoji", text: $emoji, prompt: Text(""))
+                    .font(.inputText)
                     .focused($focusedField, equals: .emoji)
                     .accessibilityIdentifier("shortcutEmojiField")
 
                 if let validationMessage {
                     Label(validationMessage, systemImage: "exclamationmark.triangle")
-                        .font(.callout)
+                        .font(.validationText)
                         .foregroundStyle(.red)
                         .accessibilityLabel("Validation error: \(validationMessage)")
                 }
@@ -47,7 +49,7 @@ struct ShortcutEditorView: View {
             .formStyle(.grouped)
 
             HStack {
-                Button("Cancel", role: .cancel) {
+                MojiActionButton("cancel") {
                     dismiss()
                 }
                 .keyboardShortcut(.cancelAction)
@@ -55,13 +57,13 @@ struct ShortcutEditorView: View {
 
                 Spacer()
 
-                Button("Save", systemImage: "checkmark", action: save)
+                MojiActionButton("save", action: save)
                     .keyboardShortcut(.defaultAction)
                     .accessibilityHint("Saves this shortcut")
                     .accessibilityIdentifier("saveShortcutButton")
             }
         }
-        .padding()
+        .padding(15)
         .frame(width: 360)
         .onAppear {
             focusedField = mode.shortcut == nil ? .alias : .emoji

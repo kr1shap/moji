@@ -7,22 +7,23 @@ struct EmojiShortcutRow: View {
     let onDelete: () -> Void
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Text(shortcut.emoji)
-                .font(.title2)
+                .font(.system(size: 24))
+                .frame(width: 38, height: 38)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 1) {
                 Text(":\(shortcut.alias):")
-                    .font(.body.monospaced())
-                Text(shortcut.isEnabled ? "Enabled" : "Disabled")
-                    .font(.caption)
+                    .font(.header)
+                Text(shortcut.isEnabled ? "enabled." : "disabled.")
+                    .font(.label)
                     .foregroundStyle(.secondary)
             }
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 12)
 
-            Menu("Shortcut actions", systemImage: "ellipsis.circle") {
+            Menu {
                 Button("Edit", systemImage: "pencil", action: onEdit)
                 Button(
                     shortcut.isEnabled ? "Disable" : "Enable",
@@ -31,9 +32,18 @@ struct EmojiShortcutRow: View {
                 )
                 Divider()
                 Button("Delete", systemImage: "trash", role: .destructive, action: onDelete)
+            } label: {
+                MojiActionLabel("configure")
             }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+            .fixedSize()
             .accessibilityLabel("Actions for :\(shortcut.alias):")
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
+        .background(.primary.opacity(0.06), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Shortcut :\(shortcut.alias):, \(shortcut.emoji), \(shortcut.isEnabled ? "enabled" : "disabled")")
     }

@@ -27,6 +27,15 @@ enum RuntimeState: Equatable {
         }
     }
 
+    var menuLabel: String {
+        switch self {
+        case .disabled: "disabled"
+        case .permissionRequired: "permissions"
+        case .active: "active"
+        case .error: "error"
+        }
+    }
+
     var isError: Bool {
         if case .error = self {
             true

@@ -1,7 +1,3 @@
-//
-//  MenuBarView.swift
-//  moji
-//
 import SwiftUI
 
 struct MenuBarView: View {
@@ -9,47 +5,58 @@ struct MenuBarView: View {
     @Environment(\.openWindow) private var openWindow
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Label("Moji", systemImage: "face.smiling")
-                .font(.headline)
-            StatusRow(state: coordinator.runtimeState)
-            Divider()
+        VStack(alignment: .leading, spacing: 0) {
+            header
+
             PermissionStatusView(
                 status: coordinator.inputAccess,
                 requestListeningAccess: coordinator.requestListeningAccess,
                 requestPostingAccess: coordinator.requestPostingAccess
             )
-            Button(
-                coordinator.preferences.isEnabled ? "Disable Moji" : "Enable Moji",
-                systemImage: coordinator.preferences.isEnabled ? "pause.circle" : "play.circle"
-            ) {
-                coordinator.setEnabled(!coordinator.preferences.isEnabled)
-            }
-            .accessibilityIdentifier("enabledButton")
-            .accessibilityValue(coordinator.preferences.isEnabled ? "Enabled" : "Disabled")
-            if coordinator.runtimeState == .permissionRequired || coordinator.runtimeState.isError {
-                Button("Retry", systemImage: "arrow.clockwise", action: coordinator.refreshInputAccess)
-                    .accessibilityIdentifier("retryButton")
-            }
-            Button(
-                "Manage Shortcuts",
-                systemImage: "list.bullet",
-                action: openShortcutManagement
-            )
-            .accessibilityIdentifier("manageShortcutsButton")
-            Text("\(coordinator.repository.shortcuts.count) configured")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-            HStack {
-                Spacer()
-                Button("Quit", systemImage: "power", action: coordinator.terminate)
-                    .accessibilityIdentifier("quitButton")
-            }
+            .padding(.top, coordinator.inputAccess.missingPermissions.isEmpty ? 0 : 6)
+
+            footer
         }
-        .padding()
-        .frame(width: 320)
+        .padding(15)
+        .frame(width: 360, alignment: .leading)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Moji menu")
+    }
+
+    private var header: some View {
+        HStack(alignment: .top, spacing: 4) {
+            Image("moji")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 42, height: 42)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 1) {
+                Text("moji")
+                    .font(.appTitle)
+                Text("an easier text replacer.")
+                    .font(.bodyText)
+            }
+            .padding(.top, 5)
+
+            Spacer(minLength: 4)
+            StatusRow(state: coordinator.runtimeState)
+                .padding(.top, 1)
+        }
+    }
+
+    private var footer: some View {
+        HStack(alignment: .bottom, spacing: 4) {
+            Text("\(coordinator.repository.shortcuts.count) configured")
+                .font(.bodyText)
+                .foregroundStyle(.secondary)
+            Spacer(minLength: 4)
+            MojiActionButton("manage", action: openShortcutManagement)
+                .accessibilityIdentifier("manageShortcutsButton")
+            MojiActionButton("quit", action: coordinator.terminate)
+                .accessibilityIdentifier("quitButton")
+        }
+        .padding(.top, 10)
     }
 
     private func openShortcutManagement() {
