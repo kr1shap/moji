@@ -1,4 +1,4 @@
-# Moji ✦
+# <img src="docs/images/moji.png" width="30" height="30" alt="moji logo"> moji
 
 <table>
 	<tr>
