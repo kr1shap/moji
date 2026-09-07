@@ -13,3 +13,6 @@ xcuserdata/
 
 # Xcode breakpoints
 xcdebugger/Breakpoints_v2.xcbkptlist
+
+docs/superpowers/**
+

@@ -43,7 +43,7 @@ V1 does not include a built-in emoji library, imports, favorites, launch at logi
 V2 will make Moji more assistive while preserving the simplicity of the core experience.
 
 - **Autocomplete and suggestions** while an alias is being typed.
-- Better discovery, browsing, anix d management for larger shortcut collections.
+- Better discovery, browsing, and management for larger shortcut collections.
 - Further refinement of replacement behavior, compatibility, and settings. aka. bug issues
 - On the technical end, clean up the code!
 - Refine for liquid glass (when I get a new macbook!)
@@ -73,6 +73,10 @@ Each event is normalized and passed to a small shortcode state machine. It retai
 Moji also marks its own synthesized events to avoid processing them again, and re-enables the event tap if macOS temporarily disables it.
 
 > **Clipboard note:** clipboard managers may briefly observe Moji’s temporary emoji value during replacement.
+
+> **Entitlements note:** Moji does not use the App Sandbox. That entitlement was removed because the sandbox prevents the reliable global `CGEvent` tap and synthesized keyboard events required for shortcode detection and replacement. Hardened runtime and automatic code signing remain enabled, and macOS input-access permissions are still required.
+
+> **Project.pbxproj:** If you look at this file, you probably will see my name as the workspace (as well, I created the project locally). You can change this to yours if you want to play around, it should do no harm. 
 
 ### Keyboard input data flow
 
