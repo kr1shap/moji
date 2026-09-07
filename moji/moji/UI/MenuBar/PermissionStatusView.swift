@@ -6,24 +6,55 @@ struct PermissionStatusView: View {
     let requestPostingAccess: () -> Void
 
     var body: some View {
-        if !status.isGranted {
-            VStack(alignment: .leading, spacing: 8) {
-                Label("Permissions Required", systemImage: "lock.circle")
-                    .font(.headline)
-                Text("Moji needs Input Monitoring to observe shortcuts and Accessibility to post replacement input.")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
+        if !status.missingPermissions.isEmpty {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("we need some permissions…")
+                    .font(.header)
 
-                if !status.canListen {
-                    Button("Allow Input Monitoring", systemImage: "keyboard", action: requestListeningAccess)
-                }
-                if !status.canPost {
-                    Button("Allow Accessibility", systemImage: "accessibility", action: requestPostingAccess)
+                HStack(spacing: 10) {
+                    ForEach(status.missingPermissions, id: \.self) { permission in
+                        PermissionStatusButton(
+                            permission: permission,
+                            requestAccess: { requestAccess(for: permission) }
+                        )
+                    }
                 }
             }
             .accessibilityElement(children: .contain)
             .accessibilityLabel("Moji permissions")
         }
+    }
+
+    private func requestAccess(for permission: InputPermission) {
+        switch permission {
+        case .inputMonitoring:
+            requestListeningAccess()
+        case .accessibility:
+            requestPostingAccess()
+        }
+    }
+}
+
+private struct PermissionStatusButton: View {
+    let permission: InputPermission
+    let requestAccess: () -> Void
+
+    var body: some View {
+        Button(action: requestAccess) {
+            HStack(spacing: 6) {
+                Rectangle()
+                    .fill(.orange)
+                    .frame(width: 17, height: 17)
+                    .clipShape(.rect(cornerRadius: 3))
+                    .rotationEffect(.radians(1.10))
+                    .accessibilityHidden(true)
+                Text(permission.title)
+                    .font(.label)
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Allow \(permission.title)")
+        .accessibilityHint("Opens the system permission prompt")
     }
 }
 

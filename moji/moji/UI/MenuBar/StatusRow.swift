@@ -8,21 +8,20 @@ struct StatusRow: View {
     let state: RuntimeState
 
     var body: some View {
-        Label {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(state.title)
-                    .font(.body)
-                if case let .error(message) = state {
-                    Text(message)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-            }
-        } icon: {
-            Image(systemName: state.systemImage)
-                .foregroundStyle(statusColor)
+        HStack(spacing: 10) {
+            Rectangle()
+                .fill(statusColor)
+                .frame(width: 17, height: 17)
+                .clipShape(.rect(cornerRadius: 3))
+                .rotationEffect(.radians(1.10))
+                .accessibilityHidden(true)
+            Text(state.menuLabel)
+                .font(.label)
         }
-        .accessibilityElement(children: .combine)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 4)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Status: \(state.title)")
         .accessibilityIdentifier("runtimeStatus")
     }
 

@@ -10,7 +10,7 @@ struct MojiApp: App {
     @State private var coordinator = AppCoordinator()
 
     var body: some Scene {
-        MenuBarExtra("Moji", systemImage: "face.smiling") {
+        MenuBarExtra("Moji", image: "mojimenuIcon") {
             MenuBarView()
                 .environment(coordinator)
                 .task { coordinator.start() }
@@ -24,6 +24,7 @@ struct MojiApp: App {
             ShortcutManagementView()
                 .environment(coordinator)
         }
+        .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 440, height: 400)
     }
 }
