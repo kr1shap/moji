@@ -42,13 +42,13 @@ V2 will make Moji more assistive while preserving the simplicity of the core exp
 
 ## Built with
 
-| Technology | Purpose |
-| --- | --- |
-| **Swift + SwiftUI** | Native macOS application and menu-bar interface |
-| **SwiftData** | Durable shortcut storage |
-| **Core Graphics (`CGEvent`)** | Keyboard observation and replacement keystrokes |
-| **AppKit** | macOS integrations, including the pasteboard and menu-bar behavior |
-| **Swift Testing + XCTest** | Unit and UI coverage |
+| Technology                    | Purpose                                                            |
+| ----------------------------- | ------------------------------------------------------------------ |
+| **Swift + SwiftUI**           | Native macOS application and menu-bar interface                    |
+| **SwiftData**                 | Durable shortcut storage                                           |
+| **Core Graphics (`CGEvent`)** | Keyboard observation and replacement keystrokes                    |
+| **AppKit**                    | macOS integrations, including the pasteboard and menu-bar behavior |
+| **Swift Testing + XCTest**    | Unit and UI coverage                                               |
 
 ---
 
@@ -61,6 +61,10 @@ Each event is normalized and passed to a small shortcode state machine. It retai
 Moji also marks its own synthesized events to avoid processing them again, and re-enables the event tap if macOS temporarily disables it.
 
 > **Clipboard note:** clipboard managers may briefly observe Moji’s temporary emoji value during replacement.
+
+### Keyboard input data flow
+
+![Moji keyboard input data flow](moji-keyboard-input-data-flow.svg)
 
 ---
 
