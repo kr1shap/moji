@@ -1,5 +1,15 @@
 # Moji ✦
 
+<table>
+	<tr>
+		<td><img src="docs/images/mojigif1.gif" alt="Moji demo 1", width="400"></td>
+		<td><img src="docs/images/mojigif3.gif" alt="Moji demo 3" width="400"></td>
+	</tr>
+	<tr>
+		<td colspan="2" align="center"><img src="docs/images/mojigif2.gif" alt="Moji demo 2" width="400"></td>
+	</tr>
+</table>
+
 > A thoughtful little macOS companion for turning your custom emoji shortcodes into emoji—right where you type.
 
 If you use the same emojis all the time, Moji saves you from opening the emoji picker over and over. Add a shortcut such as `skull` → `💀`, then type `:skull:` in a supported text field and Moji swaps it in for you.
@@ -33,8 +43,10 @@ V1 does not include a built-in emoji library, imports, favorites, launch at logi
 V2 will make Moji more assistive while preserving the simplicity of the core experience.
 
 - **Autocomplete and suggestions** while an alias is being typed.
-- Better discovery, browsing, and management for larger shortcut collections.
-- Further refinement of replacement behavior, compatibility, and settings.
+- Better discovery, browsing, anix d management for larger shortcut collections.
+- Further refinement of replacement behavior, compatibility, and settings. aka. bug issues
+- On the technical end, clean up the code!
+- Refine for liquid glass (when I get a new macbook!)
 
 > These are planned directions, not committed release scope or dates.
 
