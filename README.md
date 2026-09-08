@@ -1,16 +1,35 @@
-# <img src="docs/images/moji.png" width="30" height="30" alt="moji logo"> moji
+<p align="center">
+  <img src="docs/images/moji.png" width="112" alt="Moji logo">
+</p>
 
-<table>
-	<tr>
-		<td><img src="docs/images/mojigif1.gif" alt="Moji demo 1", width="400"></td>
-		<td><img src="docs/images/mojigif3.gif" alt="Moji demo 3" width="400"></td>
-	</tr>
-	<tr>
-		<td colspan="2" align="center"><img src="docs/images/mojigif2.gif" alt="Moji demo 2" width="400"></td>
-	</tr>
-</table>
+<h1 align="center">Moji</h1>
 
-> A thoughtful little macOS companion for turning your custom emoji shortcodes into emoji—right where you type.
+<p align="center">
+  A small macOS utility for turning your custom emoji shortcuts into emoji.
+</p>
+
+<p align="center">
+  <a href="#getting-started">Get started</a>
+  ·
+  <a href="#version-1--current-release">What’s in V1</a>
+  ·
+  <a href="#a-note-on-keyboard-events">How it works</a>
+</p>
+
+<p align="center">
+  macOS &nbsp;·&nbsp; Swift &nbsp;·&nbsp; SwiftUI
+</p>
+
+<br>
+
+<p align="center">
+  <img src="docs/images/mojigif1.gif" alt="Creating an emoji shortcut in Moji" width="390">
+  <img src="docs/images/mojigif3.gif" alt="Managing emoji shortcuts in Moji" width="390">
+</p>
+
+<p align="center">
+  <img src="docs/images/mojigif2.gif" alt="Using an emoji shortcut with Moji" width="390">
+</p>
 
 If you use the same emojis all the time, Moji saves you from opening the emoji picker over and over. Add a shortcut such as `skull` → `💀`, then type `:skull:` in a supported text field and Moji swaps it in for you.
 
