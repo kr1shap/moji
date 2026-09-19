@@ -1,44 +1,61 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ShortcutManagementView: View {
     @Environment(AppCoordinator.self) private var coordinator
-
     @Environment(\.dismiss) private var dismiss
-    @State private var editorMode: ShortcutEditorMode?
-    @State private var shortcutPendingDeletion: EmojiShortcut?
-    @State private var isDeleteConfirmationPresented = false
-    @State private var errorMessage = ""
-    @State private var isErrorPresented = false
+    @State private var viewModel = ShortcutManagementViewModel()
 
     var body: some View {
+        @Bindable var viewModel = viewModel
+
         VStack(spacing: 0) {
             header
             shortcutContent
             footer
         }
         .padding(15)
-        .frame(width: 440)
-        .frame(minHeight: 350)
-        .sheet(item: $editorMode) { mode in
-            ShortcutEditorView(mode: mode, onSave: saveShortcut)
+        .frame(width: 440, height: 400)
+        .sheet(item: $viewModel.presentedSheet) { sheet in
+            switch sheet {
+            case let .editor(mode):
+                ShortcutEditorView(mode: mode, onSave: saveShortcut)
+            case let .importPreview(preview):
+                ShortcutImportPreviewView(
+                    preview: preview,
+                    onImport: coordinator.applyShortcutImport,
+                    onComplete: viewModel.presentImportResult
+                )
+            }
         }
         .confirmationDialog(
             "Delete Shortcut?",
-            isPresented: $isDeleteConfirmationPresented,
+            isPresented: $viewModel.isDeleteConfirmationPresented,
             titleVisibility: .visible
         ) {
-            Button("Delete", role: .destructive, action: deleteShortcut)
+            Button("Delete", role: .destructive) {
+                viewModel.deletePendingShortcut(using: coordinator)
+            }
             Button("Cancel", role: .cancel) {}
         } message: {
-            if let shortcutPendingDeletion {
+            if let shortcutPendingDeletion = viewModel.shortcutPendingDeletion {
                 Text("This removes :\(shortcutPendingDeletion.alias): from Moji.")
             }
         }
-        .alert("Couldn’t Update Shortcuts", isPresented: $isErrorPresented) {
+        .alert(viewModel.activeAlert?.title ?? "", isPresented: $viewModel.isAlertPresented) {
             Button("OK", role: .cancel) {}
         } message: {
-            Text(errorMessage)
+            Text(viewModel.activeAlert?.message ?? "")
         }
+        .fileImporter(
+            isPresented: $viewModel.isFileImporterPresented,
+            allowedContentTypes: [.commaSeparatedText],
+            allowsMultipleSelection: false,
+            onCompletion: { result in
+                viewModel.handleFileSelection(result, using: coordinator)
+            },
+            onCancellation: {}
+        )
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Shortcut management")
     }
@@ -60,43 +77,55 @@ struct ShortcutManagementView: View {
             .padding(.top, 5)
 
             Spacer(minLength: 4)
-            MojiActionButton("add", action: { editorMode = .add })
-                .padding(.top, 1)
-                .accessibilityLabel("Add shortcut")
-                .accessibilityIdentifier("addShortcutButton")
+            HStack{
+                MojiActionButton(viewModel.isPreparingImport ? "reading..." : "auto-import", width: 88) {
+                    viewModel.isFileImporterPresented = true
+                }
+                .disabled(viewModel.isPreparingImport)
+                .accessibilityLabel("Auto-import shortcuts")
+                .accessibilityIdentifier("autoImportButton")
+                
+                MojiActionButton("add", action: viewModel.presentAddShortcut)
+                    .accessibilityLabel("Add shortcut")
+                    .accessibilityIdentifier("addShortcutButton")
+            }
+            .padding(.top, 4)
         }
     }
 
-    @ViewBuilder
     private var shortcutContent: some View {
-        if coordinator.repository.shortcuts.isEmpty {
-            VStack(spacing: 6) {
-                Image(systemName: "face.smiling")
-                    .font(.system(size: 24))
-                Text("no shortcuts yet")
-                    .font(.header)
-                Text("add one to replace a typed alias with an emoji.")
-                    .font(.bodyText)
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, minHeight: 210)
-        } else {
-            ScrollView {
-                LazyVStack(spacing: 8) {
-                    ForEach(coordinator.repository.shortcuts, id: \.persistentModelID) { shortcut in
-                        EmojiShortcutRow(
-                            shortcut: shortcut,
-                            onEdit: { editorMode = .edit(shortcut) },
-                            onToggleEnabled: { updateEnabledState(for: shortcut) },
-                            onDelete: { confirmDeletion(of: shortcut) }
-                        )
-                    }
+        Group {
+            if coordinator.repository.shortcuts.isEmpty {
+                VStack(spacing: 6) {
+                    Image(systemName: "face.smiling")
+                        .font(.system(size: 24))
+                    Text("no shortcuts yet")
+                        .font(.header)
+                    Text("add one to replace a typed alias with an emoji.")
+                        .font(.bodyText)
+                        .foregroundStyle(.secondary)
                 }
-                .padding(.vertical, 2)
+            } else {
+                ScrollView {
+                    LazyVStack(spacing: 8) {
+                        ForEach(coordinator.repository.shortcuts, id: \.persistentModelID) { shortcut in
+                            EmojiShortcutRow(
+                                shortcut: shortcut,
+                                onEdit: { viewModel.presentEditor(for: shortcut) },
+                                onToggleEnabled: {
+                                    viewModel.updateEnabledState(for: shortcut, using: coordinator)
+                                },
+                                onDelete: { viewModel.confirmDeletion(of: shortcut) }
+                            )
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .padding(.top, 14)
             }
-            .frame(minHeight: 210)
-            .padding(.top, 14)
         }
+        .frame(maxWidth: .infinity)
+        .frame(height: 290)
     }
 
     private var footer: some View {
@@ -112,42 +141,7 @@ struct ShortcutManagementView: View {
     }
 
     private func saveShortcut(alias: String, emoji: String) throws {
-        switch editorMode {
-        case .add:
-            _ = try coordinator.createShortcut(alias: alias, emoji: emoji)
-        case let .edit(shortcut):
-            try coordinator.updateShortcut(shortcut, alias: alias, emoji: emoji)
-        case nil:
-            return
-        }
-    }
-
-    private func updateEnabledState(for shortcut: EmojiShortcut) {
-        do {
-            try coordinator.setShortcutEnabled(!shortcut.isEnabled, for: shortcut)
-        } catch {
-            present(error)
-        }
-    }
-
-    private func confirmDeletion(of shortcut: EmojiShortcut) {
-        shortcutPendingDeletion = shortcut
-        isDeleteConfirmationPresented = true
-    }
-
-    private func deleteShortcut() {
-        guard let shortcutPendingDeletion else { return }
-        do {
-            try coordinator.deleteShortcut(shortcutPendingDeletion)
-        } catch {
-            present(error)
-        }
-        self.shortcutPendingDeletion = nil
-    }
-
-    private func present(_ error: Error) {
-        errorMessage = (error as? LocalizedError)?.errorDescription ?? "Moji could not complete that change."
-        isErrorPresented = true
+        try viewModel.saveShortcut(alias: alias, emoji: emoji, using: coordinator)
     }
 }
 

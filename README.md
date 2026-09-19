@@ -45,6 +45,7 @@ V1 is intentionally focused: reliable, user-defined emoji replacement without un
 
 - A native menu-bar experience with a dedicated shortcut-management window.
 - Create, edit, delete, enable, and disable custom `:alias:` → emoji shortcuts.
+- Import multiple shortcuts from a headerless UTF-8 CSV with a review step before existing aliases are overwritten.
 - Persistent shortcuts that are validated and normalized before saving.
 - An in-memory runtime index for fast lookup while typing.
 - Global shortcode detection while Moji is enabled and macOS input access is available.
@@ -53,7 +54,7 @@ V1 is intentionally focused: reliable, user-defined emoji replacement without un
 
 ### Intentionally out of scope
 
-V1 does not include a built-in emoji library, imports, favorites, launch at login, autocomplete, or suggestions.
+V1 does not include a built-in emoji library, favorites, launch at login, autocomplete, or suggestions.
 
 ---
 
@@ -109,6 +110,17 @@ Moji also marks its own synthesized events to avoid processing them again, and r
 2. Add an alias and an emoji—for example, `party` and `🎉`.
 3. Select the requested **Accessibility** permission in Moji and approve the native macOS prompt. If it was previously denied, enable Moji manually under **Privacy & Security** → **Accessibility**. When System Settings asks to quit and reopen Moji so the permission can take effect, choose **Quit & Reopen**.
 4. Type `:party:` in a text field to insert `🎉`.
+
+### Importing shortcuts from CSV
+
+From **Manage Shortcuts**, choose **auto-import** and select a headerless UTF-8 `.csv` file up to 5 MB. Each row must contain a plain shortcut name and its replacement:
+
+```csv
+skull,💀
+party,🎉
+```
+
+Do not include the surrounding colons in the CSV. Values containing commas can use standard CSV quotes, such as `shrug,"¯\_(ツ)_/¯, honestly"`. Moji previews additions, overrides, and skipped invalid rows before importing. Confirming the import overwrites existing shortcuts with matching names while preserving whether those shortcuts are enabled or disabled.
 
 ### Launching without opening Xcode
 

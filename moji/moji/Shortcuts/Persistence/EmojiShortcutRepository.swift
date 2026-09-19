@@ -49,11 +49,87 @@ final class EmojiShortcutRepository {
         try saveAndRefresh()
     }
 
+    func prepareImport(_ result: ShortcutCSVParseResult) -> ShortcutImportPreview {
+        var issues = result.issues
+        var entriesByAlias: [String: ShortcutImportEntry] = [:]
+        var aliasOrder: [String] = []
+        var supersededRowCount = 0
+        let existingAliases = Set(shortcuts.map(\.alias))
+
+        for row in result.rows {
+            do {
+                let alias = try normalizedAlias(from: row.alias)
+                try validateEmoji(row.emoji)
+                let emoji = row.emoji.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                if entriesByAlias[alias] != nil {
+                    supersededRowCount += 1
+                    aliasOrder.removeAll { $0 == alias }
+                }
+
+                entriesByAlias[alias] = ShortcutImportEntry(
+                    rowNumber: row.rowNumber,
+                    alias: alias,
+                    emoji: emoji,
+                    action: existingAliases.contains(alias) ? .override : .add
+                )
+                aliasOrder.append(alias)
+            } catch {
+                let message = (error as? LocalizedError)?.errorDescription
+                    ?? "This row could not be validated."
+                issues.append(ShortcutImportIssue(rowNumber: row.rowNumber, message: message))
+            }
+        }
+
+        let entries = aliasOrder.compactMap { entriesByAlias[$0] }
+        return ShortcutImportPreview(
+            entries: entries,
+            issues: issues.sorted { $0.rowNumber < $1.rowNumber },
+            supersededRowCount: supersededRowCount
+        )
+    }
+
+    func applyImport(_ preview: ShortcutImportPreview) throws -> ShortcutImportResult {
+        let existingShortcuts = Dictionary(uniqueKeysWithValues: shortcuts.map { ($0.alias, $0) })
+        let updateDate = Date.now
+        var importedShortcuts = shortcuts
+
+        for entry in preview.entries {
+            if let shortcut = existingShortcuts[entry.alias] {
+                shortcut.emoji = entry.emoji
+                shortcut.updatedAt = updateDate
+            } else {
+                let shortcut = EmojiShortcut(alias: entry.alias, emoji: entry.emoji)
+                modelContext.insert(shortcut)
+                importedShortcuts.append(shortcut)
+            }
+        }
+
+        do {
+            try modelContext.save()
+        } catch {
+            modelContext.rollback()
+            try? refresh()
+            throw error
+        }
+        publish(importedShortcuts)
+
+        return ShortcutImportResult(
+            addedCount: preview.addedCount,
+            updatedCount: preview.updatedCount,
+            skippedCount: preview.skippedCount
+        )
+    }
+
     func refresh() throws {
         let descriptor = FetchDescriptor<EmojiShortcut>(sortBy: [SortDescriptor(\.alias)])
-        shortcuts = try modelContext.fetch(descriptor)
+        publish(try modelContext.fetch(descriptor))
+    }
+
+    private func publish(_ shortcuts: [EmojiShortcut]) {
+        self.shortcuts = shortcuts.sorted { $0.alias < $1.alias }
         runtimeIndex = Dictionary(
-            uniqueKeysWithValues: shortcuts
+            uniqueKeysWithValues: self.shortcuts
                 .filter(\.isEnabled)
                 .map { ($0.alias, $0.emoji) }
         )
