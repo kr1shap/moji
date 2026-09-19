@@ -118,6 +118,16 @@ final class AppCoordinator {
         publishRuntimeIndex()
     }
 
+    func prepareShortcutImport(_ result: ShortcutCSVParseResult) -> ShortcutImportPreview {
+        repository.prepareImport(result)
+    }
+
+    func applyShortcutImport(_ preview: ShortcutImportPreview) throws -> ShortcutImportResult {
+        let result = try repository.applyImport(preview)
+        publishRuntimeIndex()
+        return result
+    }
+
     private func handleReplacementFailure() {
         eventTap.stop()
         runtimeState = .error("Moji could not replace the shortcut.")

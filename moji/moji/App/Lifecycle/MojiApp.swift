@@ -25,6 +25,7 @@ struct MojiApp: App {
                 .environment(coordinator)
         }
         .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
         .defaultSize(width: 440, height: 400)
     }
 }
